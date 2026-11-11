@@ -13,7 +13,12 @@ pub struct Rules {
 
 impl Default for Rules {
     fn default() -> Self {
-        Self { fraction: 2.0 / 3.0, low: 0.0, high: 100.0, max_level: 4 }
+        Self {
+            fraction: 2.0 / 3.0,
+            low: 0.0,
+            high: 100.0,
+            max_level: 4,
+        }
     }
 }
 
@@ -50,6 +55,27 @@ pub fn compute_result(choices: &[(&str, f64)], rules: &Rules) -> Result<KeynesRe
 
 /// Maps a choice to the closest reasoning level.
 pub fn reasoning_level(choice: f64, rules: &Rules) -> Result<Level, KeynesError> {
-    let _ = (choice, rules);
-    todo!("not implemented yet")
+    if choice < rules.low || choice > rules.high {
+        return Err(KeynesError::OutOfRange);
+    } else if choice > rules.fraction * rules.high {
+        return Ok(Level::Dominated);
+    }
+
+    let mut targets: Vec<(Level, f64)> = Vec::new();
+    let mut value = 50.0;
+
+    for level in 0..=rules.max_level {
+        targets.push((Level::Reasoning(level), value));
+        value = value * rules.fraction;
+    }
+    targets.push((Level::Equilibrium, 0.0));
+
+    let mut best = &targets[0];
+    for target in &targets {
+        if (target.1 - choice).abs() < (best.1 - choice).abs() {
+            best = target;
+        }
+    }
+
+    Ok(best.0.clone())
 }
