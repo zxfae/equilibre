@@ -62,7 +62,8 @@ pub fn reasoning_level(choice: f64, rules: &Rules) -> Result<Level, KeynesError>
     }
 
     let mut targets: Vec<(Level, f64)> = Vec::new();
-    let mut value = 50.0;
+    let middle = (rules.low + rules.high) / 2.0;
+    let mut value = middle;
 
     for level in 0..=rules.max_level {
         targets.push((Level::Reasoning(level), value));
