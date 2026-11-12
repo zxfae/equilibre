@@ -156,12 +156,20 @@ fn level_high_limit() {
 #[test]
 fn levels_scale_with_range() {
     // range 0..1000: level 0 = 500, level 1 = 333.3
-    let rules = Rules { low: 0.0, high: 1000.0, ..Rules::default() };
+    let rules = Rules {
+        low: 0.0,
+        high: 1000.0,
+        ..Rules::default()
+    };
     assert_eq!(reasoning_level(333.0, &rules), Ok(Level::Reasoning(1)));
 }
 
 #[test]
 fn dominated_scales_with_range() {
-    let rules = Rules { low: 0.0, high: 1000.0, ..Rules::default() };
+    let rules = Rules {
+        low: 0.0,
+        high: 1000.0,
+        ..Rules::default()
+    };
     assert_eq!(reasoning_level(900.0, &rules), Ok(Level::Dominated));
 }

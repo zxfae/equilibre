@@ -1,0 +1,13 @@
+[package]
+name = "keynes-cli"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Play a Keynesian beauty contest from a file of choices"
+
+[[bin]]
+name = "keynes"
+path = "src/main.rs"
+
+[dependencies]
+equilibre-core = { path = "../core" }
