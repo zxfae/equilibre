@@ -49,8 +49,44 @@ pub enum KeynesError {
 
 /// Computes the average, the target and the winners (in input order).
 pub fn compute_result(choices: &[(&str, f64)], rules: &Rules) -> Result<KeynesResult, KeynesError> {
-    let _ = (choices, rules);
-    todo!("not implemented yet")
+    if choices.is_empty() {
+        return Err(KeynesError::NoPlayers);
+    }
+    for (_, choice) in choices {
+        if choice < &rules.low || choice > &rules.high {
+            return Err(KeynesError::OutOfRange);
+        }
+    }
+    // Average of all choices
+    let sum: f64 = choices.iter().map(|(_, choice)| choice).sum();
+    let average: f64 = sum / choices.len() as f64;
+    let target = rules.fraction * average;
+
+    let mut min_distance = f64::INFINITY;
+
+    for (_, choice) in choices {
+        let distance = (choice - target).abs();
+
+        if distance < min_distance {
+            min_distance = distance;
+        }
+    }
+
+    let mut winners = Vec::new();
+    for (player, choice) in choices {
+        let distance = (choice - target).abs();
+
+        if distance == min_distance {
+            winners.push(player.to_string());
+        }
+    }
+
+    Ok(KeynesResult {
+        n_players: choices.len(),
+        average,
+        target,
+        winners,
+    })
 }
 
 /// Maps a choice to the closest reasoning level.
@@ -67,7 +103,7 @@ pub fn reasoning_level(choice: f64, rules: &Rules) -> Result<Level, KeynesError>
 
     for level in 0..=rules.max_level {
         targets.push((Level::Reasoning(level), value));
-        value = value * rules.fraction;
+        value *= rules.fraction;
     }
     targets.push((Level::Equilibrium, 0.0));
 
