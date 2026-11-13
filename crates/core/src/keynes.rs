@@ -45,6 +45,9 @@ pub enum Level {
 pub enum KeynesError {
     OutOfRange,
     NoPlayers,
+    InvalidThreshold,
+    /// The fraction must be strictly between 0 and 1, or nothing is ever eliminated.
+    InvalidFraction,
 }
 
 /// Computes the average, the target and the winners (in input order).
@@ -87,6 +90,29 @@ pub fn compute_result(choices: &[(&str, f64)], rules: &Rules) -> Result<KeynesRe
         target,
         winners,
     })
+}
+
+/// Iterated elimination of dominated strategies: the upper bound left after
+/// each round, until the first bound below `threshold` (included).
+pub fn elimination_bounds(rules: &Rules, threshold: f64) -> Result<Vec<f64>, KeynesError> {
+    if threshold <= 0.0 {
+        return Err(KeynesError::InvalidThreshold);
+    };
+    if rules.fraction >= 1.0 || rules.fraction <= 0.0 {
+        return Err(KeynesError::InvalidFraction);
+    }
+
+    let mut bound = rules.high;
+    let mut bounds = Vec::new();
+    loop {
+        bound *= rules.fraction;
+        bounds.push(bound);
+
+        if bound < threshold {
+            break;
+        }
+    }
+    Ok(bounds)
 }
 
 /// Maps a choice to the closest reasoning level.

@@ -19,7 +19,7 @@ Notes on what I learn along the way: [zxfae/TIL](https://github.com/zxfae/TIL).
 
 | Module | Game | Concepts |
 |---|---|---|
-| [`keynes`](crates/core/src/keynes.rs) | Keynesian beauty contest: pick a number, the closest to ⅔ of the average wins | best response, iterated reasoning (level-k), dominated strategies, Nash equilibrium |
+| [`keynes`](crates/core/src/keynes.rs) | Keynesian beauty contest: pick a number, the closest to ⅔ of the average wins | best response, iterated reasoning (level-k), iterated elimination of dominated strategies, Nash equilibrium |
 
 ## Tools
 

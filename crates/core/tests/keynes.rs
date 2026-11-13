@@ -1,4 +1,6 @@
-use equilibre_core::keynes::{compute_result, reasoning_level, KeynesError, Level, Rules};
+use equilibre_core::keynes::{
+    compute_result, elimination_bounds, reasoning_level, KeynesError, Level, Rules,
+};
 
 fn approx(a: f64, b: f64) -> bool {
     (a - b).abs() < 1e-9
@@ -172,4 +174,99 @@ fn dominated_scales_with_range() {
         ..Rules::default()
     };
     assert_eq!(reasoning_level(900.0, &rules), Ok(Level::Dominated));
+}
+
+// elimination_bounds
+
+#[test]
+fn first_bounds() {
+    let bounds = elimination_bounds(&Rules::default(), 1.0).unwrap();
+    assert!(approx(bounds[0], 200.0 / 3.0));
+    assert!(approx(bounds[1], 400.0 / 9.0));
+    assert!(approx(bounds[2], 800.0 / 27.0));
+}
+
+#[test]
+fn rounds_until_threshold() {
+    // 66.67, 44.44, ... 1.16, then 0.77: the first bound below 1 is kept
+    let bounds = elimination_bounds(&Rules::default(), 1.0).unwrap();
+    assert_eq!(bounds.len(), 12);
+    assert!(bounds[11] < 1.0);
+    assert!(bounds[10] >= 1.0);
+}
+
+#[test]
+fn bounds_scale_with_range() {
+    let rules = Rules {
+        low: 0.0,
+        high: 1000.0,
+        ..Rules::default()
+    };
+    let bounds = elimination_bounds(&rules, 1.0).unwrap();
+    assert!(approx(bounds[0], 2000.0 / 3.0));
+    assert!(approx(bounds[1], 4000.0 / 9.0));
+}
+
+#[test]
+fn bounds_always_decrease() {
+    let bounds = elimination_bounds(&Rules::default(), 1.0).unwrap();
+    for pair in bounds.windows(2) {
+        assert!(pair[1] < pair[0]);
+    }
+}
+
+#[test]
+fn zero_threshold() {
+    assert_eq!(
+        elimination_bounds(&Rules::default(), 0.0),
+        Err(KeynesError::InvalidThreshold)
+    );
+}
+
+#[test]
+fn negative_threshold() {
+    assert_eq!(
+        elimination_bounds(&Rules::default(), -1.0),
+        Err(KeynesError::InvalidThreshold)
+    );
+}
+
+fn with_fraction(fraction: f64) -> Rules {
+    Rules {
+        fraction,
+        ..Rules::default()
+    }
+}
+
+#[test]
+fn fraction_of_one() {
+    // the bound never goes down: nothing is ever eliminated
+    assert_eq!(
+        elimination_bounds(&with_fraction(1.0), 1.0),
+        Err(KeynesError::InvalidFraction)
+    );
+}
+
+#[test]
+fn fraction_above_one() {
+    assert_eq!(
+        elimination_bounds(&with_fraction(1.5), 1.0),
+        Err(KeynesError::InvalidFraction)
+    );
+}
+
+#[test]
+fn zero_fraction() {
+    assert_eq!(
+        elimination_bounds(&with_fraction(0.0), 1.0),
+        Err(KeynesError::InvalidFraction)
+    );
+}
+
+#[test]
+fn negative_fraction() {
+    assert_eq!(
+        elimination_bounds(&with_fraction(-0.5), 1.0),
+        Err(KeynesError::InvalidFraction)
+    );
 }

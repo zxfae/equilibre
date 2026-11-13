@@ -48,6 +48,14 @@ fn main() -> ExitCode {
             eprintln!("error: no players in {path}");
             ExitCode::FAILURE
         }
+        Err(KeynesError::InvalidThreshold) => {
+            eprintln!("error: invalid threshold");
+            ExitCode::FAILURE
+        }
+        Err(KeynesError::InvalidFraction) => {
+            eprintln!("error: the fraction must be between 0 and 1");
+            ExitCode::FAILURE
+        }
         Err(KeynesError::OutOfRange) => {
             let outside: Vec<&str> = choices
                 .iter()
