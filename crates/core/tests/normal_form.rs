@@ -154,3 +154,9 @@ fn bottom_does_not_dominate_top_for_row() {
     assert!(!strictly_dominates(&asymmetric(), Player::Row, BOTTOM, TOP));
     assert!(!weakly_dominates(&asymmetric(), Player::Row, BOTTOM, TOP));
 }
+
+#[test]
+fn strict_domination_is_also_weak() {
+    assert!(weakly_dominates(&original(), Player::Row, BETRAY, SILENT));
+    assert!(weakly_dominates(&asymmetric(), Player::Column, LEFT, RIGHT));
+}
