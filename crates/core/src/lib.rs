@@ -2,3 +2,4 @@
 //! No dependency on any platform or external service.
 
 pub mod keynes;
+pub mod normal_form;
