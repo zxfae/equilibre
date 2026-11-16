@@ -160,3 +160,49 @@ fn strict_domination_is_also_weak() {
     assert!(weakly_dominates(&original(), Player::Row, BETRAY, SILENT));
     assert!(weakly_dominates(&asymmetric(), Player::Column, LEFT, RIGHT));
 }
+
+const MIDDLE: usize = 1;
+
+/// The row player has three strategies.
+///
+///            Left     Right
+/// Top       (4, 1)   (3, 0)
+/// Middle    (2, 2)   (1, 3)
+/// Bottom    (5, 0)   (0, 1)
+fn three_rows() -> Game {
+    Game {
+        row_strategies: vec![
+            "top".to_string(),
+            "middle".to_string(),
+            "bottom".to_string(),
+        ],
+        col_strategies: vec!["left".to_string(), "right".to_string()],
+        payoffs: vec![
+            vec![(4.0, 1.0), (3.0, 0.0)],
+            vec![(2.0, 2.0), (1.0, 3.0)],
+            vec![(5.0, 0.0), (0.0, 1.0)],
+        ],
+    }
+}
+
+#[test]
+fn top_strictly_dominates_middle_with_three_rows() {
+    assert!(strictly_dominates(&three_rows(), Player::Row, TOP, MIDDLE));
+}
+
+#[test]
+fn bottom_does_not_dominate_middle_with_three_rows() {
+    let bottom = 2;
+    assert!(!strictly_dominates(
+        &three_rows(),
+        Player::Row,
+        bottom,
+        MIDDLE
+    ));
+    assert!(!weakly_dominates(
+        &three_rows(),
+        Player::Row,
+        bottom,
+        MIDDLE
+    ));
+}
