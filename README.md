@@ -20,6 +20,50 @@ Notes on what I learn along the way: [zxfae/TIL](https://github.com/zxfae/TIL).
 | Module | Game | Concepts |
 |---|---|---|
 | [`keynes`](crates/core/src/keynes.rs) | Keynesian beauty contest: pick a number, the closest to ⅔ of the average wins | best response, iterated reasoning (level-k), iterated elimination of dominated strategies, Nash equilibrium |
+| [`normal_form`](crates/core/src/normal_form.rs) | Any two-player game written as a payoff matrix, such as the prisoner's dilemma | strict and weak domination, iterated elimination of strictly dominated strategies, depth of reasoning |
+
+## Library
+
+### Iterated elimination
+
+A two-player game is a payoff matrix: `payoffs[row][col]` holds the row player's payoff,
+then the column player's. `iterated_elimination` removes strictly dominated strategies,
+round after round, and returns what was removed in each round and what is left.
+
+```
+            Left     Center   Right
+Top        (2, 1)   (3, 3)   (0, 2)
+Middle     (1, 2)   (4, 3)   (1, 0)
+Bottom     (0, 4)   (2, 2)   (5, 1)
+```
+
+```rust
+use equilibre_core::normal_form::{iterated_elimination, Game};
+
+let game = Game {
+    row_strategies: vec!["top".into(), "middle".into(), "bottom".into()],
+    col_strategies: vec!["left".into(), "center".into(), "right".into()],
+    payoffs: vec![
+        vec![(2.0, 1.0), (3.0, 3.0), (0.0, 2.0)],
+        vec![(1.0, 2.0), (4.0, 3.0), (1.0, 0.0)],
+        vec![(0.0, 4.0), (2.0, 2.0), (5.0, 1.0)],
+    ],
+};
+
+let result = iterated_elimination(&game);
+assert_eq!(result.rounds.len(), 4); // Right, then Bottom, then Left, then Top
+assert_eq!(result.rows, vec![1]); // Middle
+assert_eq!(result.cols, vec![1]); // Center
+```
+
+Each round removes, at once, every strategy that is strictly dominated for either player.
+Bottom only becomes dominated once Right is gone: each removal makes the next one possible.
+The number of rounds measures how far the players must reason about each other to reach
+the result. The prisoner's dilemma takes a single round; this game takes four.
+
+Only strict domination is used, so the result never depends on the order of removal.
+`strictly_dominates` and `weakly_dominates` are also available to compare two strategies
+directly.
 
 ## Tools
 
