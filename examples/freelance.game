@@ -1,0 +1,7 @@
+# Two freelancers quote the same 20-day project, payoffs in thousands of euros.
+# The client compares day rate minus each strength: my relationship is worth
+# 30 € a day to them, Sam's portfolio 20 €.
+           | Sam 550  | Sam 530  | Sam 515
+Me 550     | 11, 0    | 0, 10.6  | 0, 10.3
+Me 530     | 10.6, 0  | 10.6, 0  | 0, 10.3
+Me 515     | 10.3, 0  | 10.3, 0  | 10.3, 0

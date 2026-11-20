@@ -1,0 +1,5 @@
+# Matching pennies: the row player wants the coins to match,
+# the column player wants them to differ. No pure equilibrium.
+         | Heads  | Tails
+Heads    | 1, -1  | -1, 1
+Tails    | -1, 1  | 1, -1

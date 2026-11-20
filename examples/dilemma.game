@@ -1,0 +1,5 @@
+# Prisoner's dilemma: staying silent together pays more,
+# but betraying is better whatever the other one does.
+         | Silent | Betray
+Silent   | 3, 3   | 0, 5
+Betray   | 5, 0   | 1, 1

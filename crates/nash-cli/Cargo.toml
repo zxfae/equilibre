@@ -1,0 +1,13 @@
+[package]
+name = "nash-cli"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Solve a two-player game from a payoff table"
+
+[[bin]]
+name = "nash"
+path = "src/main.rs"
+
+[dependencies]
+equilibre-core = { path = "../core" }

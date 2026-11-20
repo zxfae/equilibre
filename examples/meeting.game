@@ -1,0 +1,5 @@
+# Two friends without phones: being together beats being alone,
+# but each prefers a different place. Two equilibria.
+              | Cinema | Restaurant
+Cinema        | 2, 1   | 0, 0
+Restaurant    | 0, 0   | 1, 2

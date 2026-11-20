@@ -20,7 +20,7 @@ Notes on what I learn along the way: [zxfae/TIL](https://github.com/zxfae/TIL).
 | Module | Game | Concepts |
 |---|---|---|
 | [`keynes`](crates/core/src/keynes.rs) | Keynesian beauty contest: pick a number, the closest to ⅔ of the average wins | best response, iterated reasoning (level-k), iterated elimination of dominated strategies, Nash equilibrium |
-| [`normal_form`](crates/core/src/normal_form.rs) | Any two-player game written as a payoff matrix, such as the prisoner's dilemma | strict and weak domination, iterated elimination of strictly dominated strategies, depth of reasoning |
+| [`normal_form`](crates/core/src/normal_form.rs) | Any two-player game written as a payoff matrix, such as the prisoner's dilemma | strict and weak domination, iterated elimination of strictly dominated strategies, depth of reasoning, pure Nash equilibria |
 
 ## Library
 
@@ -106,6 +106,48 @@ fully rational is not enough when the others are not.
 Install it with `cargo install --path crates/keynes-cli`, then run `keynes <file>`
 (use `-` to read from standard input).
 
+### `nash`
+
+Solves a two-player game written as a payoff table: `|` between columns, and
+`row payoff, column payoff` in each cell.
+
+```
+# examples/freelance.game
+           | Sam 550  | Sam 530  | Sam 515
+Me 550     | 11, 0    | 0, 10.6  | 0, 10.3
+Me 530     | 10.6, 0  | 10.6, 0  | 0, 10.3
+Me 515     | 10.3, 0  | 10.3, 0  | 10.3, 0
+```
+
+```sh
+cargo run -p nash-cli -- examples/three-by-three.game
+```
+
+```
+Game     3 x 3
+Rows     Top, Middle, Bottom
+Columns  Left, Center, Right
+
+Iterated elimination of strictly dominated strategies
+  round 1  rows: -  columns: Right
+  round 2  rows: Bottom  columns: -
+  round 3  rows: -  columns: Left
+  round 4  rows: Top  columns: -
+  left     rows: Middle  columns: Center
+  depth    4 rounds
+
+Pure Nash equilibria
+  (Middle, Center)  payoffs 4, 3
+```
+
+The report shows each round of elimination, how many rounds it takes (how far the players
+must reason about each other), then every pure Nash equilibrium: a cell where neither player
+gains by switching alone. A game can have one, several (`examples/meeting.game`) or none
+(`examples/pennies.game`), in which case the players must randomize.
+
+Install it with `cargo install --path crates/nash-cli`, then run `nash <file>`
+(use `-` to read from standard input).
+
 ## Layout
 
 ```
@@ -113,7 +155,8 @@ crates/
 ├── core/          # crate `equilibre-core`: the games, no dependencies
 │   ├── src/
 │   └── tests/
-└── keynes-cli/    # the `keynes` command
+├── keynes-cli/    # the `keynes` command
+└── nash-cli/      # the `nash` command
 examples/          # sample inputs
 ```
 
