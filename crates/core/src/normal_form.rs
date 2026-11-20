@@ -162,3 +162,36 @@ pub fn iterated_elimination(game: &Game) -> Elimination {
     }
     Elimination { rounds, rows, cols }
 }
+
+/// Pure-strategy Nash equilibria: every cell `(row, col)` where each player's
+/// payoff is a best response to the other's strategy, in table order. Empty when
+/// the game has no pure equilibrium.
+pub fn pure_nash(game: &Game) -> Vec<(usize, usize)> {
+    let mut equilibria: Vec<(usize, usize)> = Vec::new();
+    let rows: Vec<usize> = (0..game.row_strategies.len()).collect();
+    let cols: Vec<usize> = (0..game.col_strategies.len()).collect();
+
+    for &r in &rows {
+        for &c in &cols {
+            //post-it
+            let mut row_ok = true;
+
+            for &r2 in &rows {
+                if game.payoffs[r2][c].0 > game.payoffs[r][c].0 {
+                    row_ok = false;
+                }
+            }
+
+            let mut col_ok = true;
+            for &c2 in &cols {
+                if game.payoffs[r][c2].1 > game.payoffs[r][c].1 {
+                    col_ok = false;
+                }
+            }
+            if row_ok && col_ok {
+                equilibria.push((r, c));
+            }
+        }
+    }
+    equilibria
+}
